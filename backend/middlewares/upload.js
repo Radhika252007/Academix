@@ -50,4 +50,24 @@ const assignmentUpload = multer({
     storage: assignmentStorage,
     limits: {fileSize: 20*1024*1024}
 });
-module.exports = {upload,assignmentStorage,assignmentUpload};
+
+const assignmentProvidedStorage = new CloudinaryStorage({
+    cloudinary : cloudinary, 
+    params: (req,res)=>{
+        const courseId = sanitize(req.params.courseId);
+        const groupNumber = sanitize(req.params.groupNumber);
+        const res = {
+            folder : `student_portal/assignedAssignmentFiles/course_${courseId}/group_number${groupNumber}`,
+            allowed_formats: ['pdf','docx','png','jpg','jpeg'],
+            public_id: `${file.fieldname}_${Date.now()}`,
+            resource_type: 'auto'
+        };
+return res;
+    }
+})
+
+const assignmentProvidedUpload = multer({
+    storage: assignmentProvidedStorage,
+    limits: {fileSize: 20*1024*1024}
+});
+module.exports = {upload,assignmentStorage,assignmentUpload,assignmentProvidedUpload};
